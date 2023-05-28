@@ -23,6 +23,9 @@ app = FastAPI()
 
 deta = Deta(DETA_KEY)
 
+cotm11_std_db = deta.Base("cotm11_std")
+last_word_db = deta.Base("last_word")
+
 class TelegramWebhook(BaseModel):
     update_id: int
     message: Optional[dict]
@@ -69,13 +72,28 @@ def add_last_word(update, context):
     """
     context.bot.send_message(chat_id=update.effective_chat.id, text="Last word added")
 
+now= datetime.datetime.now()
 
+def cotm_11(update, context):
+    """
+    to insert cont11_std
+    """
+    user = update.effective_user or update.effective_chat
+    cotm11Std_dict = user.to_dict()
+    cotm11Std_dict['at']=now.strftime("%d/%m/%y, %H:%M")
+    cotm11Std_dict['key'] = str(user.id)
+
+    cotm11_std_db.put(cotm11Std_dict)
+    update.message.reply_html(text="Good", user_id=user.id)
+    
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('last_words', last_words))
     dispatcher.add_handler(CommandHandler('last_word', last_word))
     dispatcher.add_handler(CommandHandler('my_last_word', my_last_word))
     dispatcher.add_handler(CommandHandler('add_last_word', add_last_word))
+
+    dispatcher.add_handler(CommandHandler('cotm_11', cotm_11))
 
 def main():
     updater = Updater(TOKEN, use_context=True)
