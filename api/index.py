@@ -22,19 +22,19 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging
 # MSG
 help_msg = """
 Here is the help
-use <code>start</code>
+use <code>/start</code>
 to start
 
-use <code>add_last_word</code>
+use <code>/add_last_word</code>
 followed by your last word to insert last word
 
-use <code>my_last_word</code>
+use <code>/my_last_word</code>
 to see your last word
 
-use <code>info</code>
+use <code>/info</code>
 To get information about the project
 
-use <code>help</code>
+use <code>/help</code>
 To get help text
 """
 
