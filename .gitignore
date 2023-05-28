@@ -1,0 +1,6 @@
+env
+.env
+.space
+Spacefile
+*.pyc
+*.swp
