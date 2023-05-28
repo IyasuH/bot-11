@@ -28,6 +28,13 @@ last_word_db = deta.Base("last_word")
 
 ADMIN_ID = 403875924
 
+now=datetime.datetime.now()
+
+cotm11_stds = cotm11_std_db.fetch().items
+cotm11_std_ids = []
+for cotm11_std in cotm11_stds:
+    cotm11_std_ids.append(cotm11_std["id"])
+
 class TelegramWebhook(BaseModel):
     update_id: int
     message: Optional[dict]
@@ -42,6 +49,13 @@ class TelegramWebhook(BaseModel):
     poll: Optional[dict]
     poll_answer: Optional[dict]
 
+def fecth_cotm11_stds():
+    """
+    fetch cotm11_std
+    """
+    cotm11_stds = cotm11_std_db.fetch().items
+    return cotm11_stds
+
 def start(update, context):
     """
     here check user_id and tell if they are cotm-11 or not
@@ -53,6 +67,10 @@ def last_words(update, context):
     """
     first check if user_id is from cotm-11 if so send every bodies last word
     """
+    effective_user = update.effective_user
+    if effective_user.id != ADMIN_ID:
+        update.message.reply_text(text="sory muchacho")
+        return
     context.bot.send_message(chat_id=update.effective_chat.id, text="Last Words")
     
 
@@ -60,21 +78,46 @@ def last_word(update, context):
     """
     check id then sends one last_word accordingly
     """
+    effective_user = update.effective_user
+    if effective_user not in cotm11_std_ids:
+        update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
+        return
     context.bot.send_message(chat_id=update.effective_chat.id, text="Last Word")
     
 def my_last_word(update, context):
     """
     check id then sends users last_word
     """
+    effective_user = update.effective_user
+    if effective_user not in cotm11_std_ids:
+        update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
+        return
     context.bot.send_message(chat_id=update.effective_chat.id, text="Your last word")
 
-def add_last_word(update, context):
+def add_last_word(update: Update, context: CallbackContext):
     """
     check id and last_word
     """
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Last word added")
+    effective_user = update.effective_user
+    if effective_user not in cotm11_std_ids:
+        update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
+        return
+    user_11=effective_user
+    user_11_username = getattr(user_11, "username", '')
+    user_11_firstname = getattr(user_11, "first_name", '')
 
-now= datetime.datetime.now()
+    last_word_raw = str(context.args[0:])
+    last_word=last_word_raw[1:-1].replace("'", "")
+
+    my_last_word = {}
+    my_last_word['key'] = str(user_11.id)
+    my_last_word['first_name'] = user_11_firstname
+    my_last_word['user_name'] = user_11_username
+    my_last_word['at']=now.strftime("%d/%m/%y, %H:%M")
+    my_last_word['last_word'] = last_word
+
+    last_word_db.put(my_last_word)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Success last word added(or updated)\nLast word: "+str(last_word)+"\nBy: "+str(user_11_firstname))
 
 def cotm_11(update, context):
     """
@@ -88,16 +131,6 @@ def cotm_11(update, context):
     cotm11_std_db.put(cotm11Std_dict)
     update.message.reply_html(text="Good")
 
-def fecth_cotm11_stds():
-    """
-    fetch cotm11_std
-    """
-    cotm11_stds = cotm11_std_db.fetch().items
-    cotm11_std_ids = []
-    for cotm11_std in cotm11_stds:
-        cotm11_std_ids.append(cotm11_std["id"])
-    return cotm11_std_ids
-
 
 def get_cotm_11(update, context):
     """
@@ -105,9 +138,8 @@ def get_cotm_11(update, context):
     """
     effective_user = update.effective_user
     if effective_user.id != ADMIN_ID:
-        update.message.reply_text(text="sry muchacho")
+        update.message.reply_text(text="sory muchacho")
         return
-    cotm11_std_ids=fecth_cotm11_stds()
     update.message.reply_text("Registered Ids: "+str(cotm11_std_ids))
 
 def register_handlers(dispatcher):
@@ -117,7 +149,7 @@ def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('my_last_word', my_last_word))
     dispatcher.add_handler(CommandHandler('add_last_word', add_last_word))
 
-    dispatcher.add_handler(CommandHandler('cotm_11', cotm_11))
+    # dispatcher.add_handler(CommandHandler('cotm_11', cotm_11))
     dispatcher.add_handler(CommandHandler('get_cotm_11', get_cotm_11))
 
 
