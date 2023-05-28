@@ -79,7 +79,7 @@ def last_word(update, context):
     check id then sends one last_word accordingly
     """
     effective_user = update.effective_user
-    if effective_user not in cotm11_std_ids:
+    if effective_user.id not in cotm11_std_ids:
         update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
         return
     context.bot.send_message(chat_id=update.effective_chat.id, text="Last Word")
@@ -89,7 +89,7 @@ def my_last_word(update, context):
     check id then sends users last_word
     """
     effective_user = update.effective_user
-    if effective_user not in cotm11_std_ids:
+    if effective_user.id not in cotm11_std_ids:
         update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
         return
     context.bot.send_message(chat_id=update.effective_chat.id, text="Your last word")
@@ -99,7 +99,7 @@ def add_last_word(update: Update, context: CallbackContext):
     check id and last_word
     """
     effective_user = update.effective_user
-    if effective_user not in cotm11_std_ids:
+    if effective_user.id not in cotm11_std_ids:
         update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
         return
     user_11=effective_user
