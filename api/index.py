@@ -19,6 +19,32 @@ DETA_KEY = os.getenv("DETA_KEY")
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging.INFO)
 
+# MSG
+help_msg = """
+Here is the help
+use <code>start</code>
+to start
+
+use <code>add_last_word</code>
+followed by your last word to insert last word
+
+use <code>my_last_word</code>
+to see your last word
+
+use <code>info</code>
+To get information about the project
+
+use <code>help</code>
+To get help text
+"""
+
+info_msg = """
+This is project is intended for cotm 11
+developed by @
+more info will be updated soon
+"""
+
+
 app = FastAPI()
 
 deta = Deta(DETA_KEY)
@@ -72,7 +98,8 @@ def last_words(update, context):
         update.message.reply_text(text="sory muchacho")
         return
     tot_last_words = last_word_db.fetch().items
-    update.message.reply_text("Total Last Word: "+str(len(tot_last_words)))+"\n\n"+str(tot_last_words)
+    update.message.reply_text("Total Last Word: "+str(len(tot_last_words)))
+    update.message.reply_text("Including: "+str(tot_last_words))
 
 
 def last_word(update, context):
@@ -97,7 +124,7 @@ def my_last_word(update, context):
     if last_word_query == None:
         update.message.reply_text(text="I don't have you have your last word \nplease add your last word using /add_last_word followed by last word")
     else:
-        context.bot.send_message(chat_id=update.effective_chat.id, text="Your last word is: "+last_word_query['last_word']+"\n Added at: "+last_word_query['at'])
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Your last word is: "+last_word_query['last_word']+"\n Added at: "+last_word_query['at']+"[UTC + 0]")
 
 def add_last_word(update: Update, context: CallbackContext):
     """
@@ -151,13 +178,21 @@ def info(update, context):
     """
     sends info about the project
     """
-    
+    effective_user = update.effective_user
+    if effective_user.id not in cotm11_std_ids:
+        update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
+        return
+    update.message.reply_html(info_msg)
 
 def help(update, context):
     """
     help text how to use the bot
     """
-    
+    effective_user = update.effective_user
+    if effective_user.id not in cotm11_std_ids:
+        update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
+        return
+    update.message.reply_html(help_msg)
 
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
