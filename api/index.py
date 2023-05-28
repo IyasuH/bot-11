@@ -65,22 +65,23 @@ def start(update, context):
 
 def last_words(update, context):
     """
-    first check if user_id is from cotm-11 if so send every bodies last word
+    sends every bodies last word
     """
     effective_user = update.effective_user
     if effective_user.id != ADMIN_ID:
         update.message.reply_text(text="sory muchacho")
         return
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Last Words")
-    
+    tot_last_words = last_word_db.fetch().items
+    update.message.reply_text("Total Last Word: "+str(len(tot_last_words)))+"\n\n"+str(tot_last_words)
+
 
 def last_word(update, context):
     """
     check id then sends one last_word accordingly
     """
     effective_user = update.effective_user
-    if effective_user.id not in cotm11_std_ids:
-        update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
+    if effective_user.id != ADMIN_ID:
+        update.message.reply_text(text="sory muchacho")
         return
     context.bot.send_message(chat_id=update.effective_chat.id, text="Last Word")
     
@@ -92,7 +93,11 @@ def my_last_word(update, context):
     if effective_user.id not in cotm11_std_ids:
         update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
         return
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Your last word")
+    last_word_query = last_word_db.get(str(effective_user.id))
+    if last_word_query == None:
+        update.message.reply_text(text="I don't have you have your last word \nplease add your last word using /add_last_word followed by last word")
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Your last word is: "+last_word_query['last_word']+"\n Added at: "+last_word_query['at'])
 
 def add_last_word(update: Update, context: CallbackContext):
     """
@@ -119,17 +124,17 @@ def add_last_word(update: Update, context: CallbackContext):
     last_word_db.put(my_last_word)
     context.bot.send_message(chat_id=update.effective_chat.id, text="Success last word added(or updated)\nLast word: "+str(last_word)+"\nBy: "+str(user_11_firstname))
 
-def cotm_11(update, context):
-    """
-    to insert cont11_std
-    """
-    user = update.effective_user or update.effective_chat
-    cotm11Std_dict = user.to_dict()
-    cotm11Std_dict['at']=now.strftime("%d/%m/%y, %H:%M")
-    cotm11Std_dict['key'] = str(user.id)
+# def cotm_11(update, context):
+#     """
+#     to insert cont11_std
+#     """
+#     user = update.effective_user or update.effective_chat
+#     cotm11Std_dict = user.to_dict()
+#     cotm11Std_dict['at']=now.strftime("%d/%m/%y, %H:%M")
+#     cotm11Std_dict['key'] = str(user.id)
 
-    cotm11_std_db.put(cotm11Std_dict)
-    update.message.reply_html(text="Good")
+#     cotm11_std_db.put(cotm11Std_dict)
+#     update.message.reply_html(text="Good")
 
 
 def get_cotm_11(update, context):
@@ -140,10 +145,25 @@ def get_cotm_11(update, context):
     if effective_user.id != ADMIN_ID:
         update.message.reply_text(text="sory muchacho")
         return
-    update.message.reply_text("Registered Ids: "+str(cotm11_std_ids))
+    update.message.reply_text("Total Registered IDs: "+str(len(cotm11_std_ids))+"\nRegistered IDs: "+str(cotm11_std_ids))
+
+def info(update, context):
+    """
+    sends info about the project
+    """
+    
+
+def help(update, context):
+    """
+    help text how to use the bot
+    """
+    
 
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
+    dispatcher.add_handler(CommandHandler('info', info))
+    dispatcher.add_handler(CommandHandler('help', help))
+
     dispatcher.add_handler(CommandHandler('last_words', last_words))
     dispatcher.add_handler(CommandHandler('last_word', last_word))
     dispatcher.add_handler(CommandHandler('my_last_word', my_last_word))
