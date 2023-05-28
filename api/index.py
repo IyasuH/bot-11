@@ -26,6 +26,19 @@ deta = Deta(DETA_KEY)
 cotm11_std_db = deta.Base("cotm11_std")
 last_word_db = deta.Base("last_word")
 
+ADMIN_ID = 403875924
+
+def fecth_cotm11_stds():
+    """
+    fetch cotm11_std
+    """
+    cotm11_stds = cotm11_std_db.fetch().items
+    cotm11_std_ids = []
+    for cotm11_std in cotm11_stds:
+        cotm11_std_ids.append(cotm11_std["id"])
+    return cotm11_std_ids
+
+
 class TelegramWebhook(BaseModel):
     update_id: int
     message: Optional[dict]
@@ -84,8 +97,19 @@ def cotm_11(update, context):
     cotm11Std_dict['key'] = str(user.id)
 
     cotm11_std_db.put(cotm11Std_dict)
-    update.message.reply_html(text="Good", user_id=user.id)
-    
+    update.message.reply_html(text="Good")
+
+def get_cotm_11(update, context):
+    """
+    to get ids
+    """
+    effective_user = update.effective_user
+    if effective_user.id != ADMIN_ID:
+        update.message.reply_text(text="sry muchacho")
+        return
+    cotm11_std_ids=fecth_cotm11_stds
+    update.message.reply_text("Registered Ids: "+str(cotm11_std_ids))
+
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('last_words', last_words))
@@ -94,6 +118,8 @@ def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('add_last_word', add_last_word))
 
     dispatcher.add_handler(CommandHandler('cotm_11', cotm_11))
+    dispatcher.add_handler(CommandHandler('get_cotm_11', get_cotm_11))
+
 
 def main():
     updater = Updater(TOKEN, use_context=True)
