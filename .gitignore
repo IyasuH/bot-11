@@ -2,5 +2,6 @@ env
 .env
 .space
 Spacefile
+dummy.py
 *.pyc
 *.swp
