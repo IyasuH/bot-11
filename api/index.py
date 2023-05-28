@@ -39,12 +39,43 @@ class TelegramWebhook(BaseModel):
 
 def start(update, context):
     """
+    here check user_id and tell if they are cotm-11 or not
     """
     effective_chat = update.effective_user
     context.bot.send_message(chat_id=update.effective_chat.id, text="Hello")
 
+def last_words(update, context):
+    """
+    first check if user_id is from cotm-11 if so send every bodies last word
+    """
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Last Words")
+    
+
+def last_word(update, context):
+    """
+    check id then sends one last_word accordingly
+    """
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Last Word")
+    
+def my_last_word(update, context):
+    """
+    check id then sends users last_word
+    """
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Your last word")
+
+def add_last_word(update, context):
+    """
+    check id and last_word
+    """
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Last word added")
+
+
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
+    dispatcher.add_handler(CommandHandler('last_words', last_words))
+    dispatcher.add_handler(CommandHandler('last_word', last_word))
+    dispatcher.add_handler(CommandHandler('my_last_word', my_last_word))
+    dispatcher.add_handler(CommandHandler('add_last_word', add_last_word))
 
 def main():
     updater = Updater(TOKEN, use_context=True)
