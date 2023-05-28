@@ -107,7 +107,7 @@ def add_last_word(update: Update, context: CallbackContext):
     user_11_firstname = getattr(user_11, "first_name", '')
 
     last_word_raw = str(context.args[0:])
-    last_word=last_word_raw[1:-1].replace("'", "")
+    last_word=last_word_raw[1:-1].replace("'", "").replace(",", "")
 
     my_last_word = {}
     my_last_word['key'] = str(user_11.id)
