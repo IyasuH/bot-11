@@ -23,25 +23,43 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging
 help_msg = """
 Here is the help
 use <code>/start</code>
-to start
+To start
 
-use <code>/add_last_word</code>
+use <b><code>/add_last_word</code></b>
 followed by your last word to insert last word
 
-use <code>/my_last_word</code>
-to see your last word
+use <b>/my_last_word</b>
+To see your last word
 
-use <code>/info</code>
+use <b>/am_i_comt11</b>
+To check whether you are cotm11 or not
+
+use <b>/info</b>
 To get information about the project
 
-use <code>/help</code>
+use <b>/help</b>
 To get help text
 """
 
 info_msg = """
 This is project is intended for cotm 11
-developed by @
-more info will be updated soon
+
+developed by @IyasuHa
+
+more info will be updated soon.
+"""
+
+start_msg = """
+Hi 👋 <a href="tg://user?id={user_id}">{name}</a>
+
+use <b><code>/add_last_word</code></b>
+followed by your last word to insert last word
+
+use <b>/my_last_word</b>
+to see your last word
+
+use <b>/help</b>
+To get help
 """
 
 
@@ -86,8 +104,9 @@ def start(update, context):
     """
     here check user_id and tell if they are cotm-11 or not
     """
-    effective_chat = update.effective_user
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hello")
+    user = update.effective_user
+    first_name = getattr(user, "first_name", '')
+    update.message.reply_html(text=start_msg.format(name=first_name, user_id=user.id))
 
 def last_words(update, context):
     """
@@ -194,17 +213,29 @@ def help(update, context):
         return
     update.message.reply_html(help_msg)
 
+def am_i_cotm11(update, context):
+    """
+    to check if user is registered in cotm-11
+    """
+    effective_user = update.effective_user
+    if effective_user.id not in cotm11_std_ids:
+        update.message.reply_text(text="I Don't think you are CoTM 11 \n\n If you think you are contact @IyasuHa")
+        return
+    update.message.reply_text(text="Yeah, You definitely are CoTM 11")
+    
+
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('info', info))
     dispatcher.add_handler(CommandHandler('help', help))
-
-    dispatcher.add_handler(CommandHandler('last_words', last_words))
-    dispatcher.add_handler(CommandHandler('last_word', last_word))
+    
     dispatcher.add_handler(CommandHandler('my_last_word', my_last_word))
     dispatcher.add_handler(CommandHandler('add_last_word', add_last_word))
+    dispatcher.add_handler(CommandHandler('am_i_cotm11', am_i_cotm11))
 
     # dispatcher.add_handler(CommandHandler('cotm_11', cotm_11))
+    dispatcher.add_handler(CommandHandler('last_words', last_words))
+    dispatcher.add_handler(CommandHandler('last_word', last_word))
     dispatcher.add_handler(CommandHandler('get_cotm_11', get_cotm_11))
 
 
