@@ -22,7 +22,7 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging
 # MSG
 help_msg = """
 Here is the help
-use <code>/start</code>
+use <b>/start</b>
 To start
 
 use <b><code>/add_last_word</code></b>
