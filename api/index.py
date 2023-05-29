@@ -31,7 +31,7 @@ followed by your last word to insert last word
 use <b>/my_last_word</b>
 To see your last word
 
-use <b>/am_i_comt11</b>
+use <b>/am_i_cotm11</b>
 To check whether you are cotm11 or not
 
 use <b>/info</b>
